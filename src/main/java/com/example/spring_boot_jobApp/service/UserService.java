@@ -1,18 +1,39 @@
 package com.example.spring_boot_jobApp.service;
 
-import com.example.spring_boot_jobApp.model.User;
-import com.example.spring_boot_jobApp.repo.UserRepo;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.spring_boot_jobApp.model.RegisterUserRequest;
+import com.example.spring_boot_jobApp.model.UserResponse;
+import com.example.spring_boot_jobApp.model.Users;
+import com.example.spring_boot_jobApp.repo.UserDetailsRepository;
+import org.apache.catalina.User;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepo repo;
+    private final UserDetailsRepository userDetailsRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public User saveUser(User user) {
+    public UserService(UserDetailsRepository userDetailsRepository, PasswordEncoder passwordEncoder) {
+        this.userDetailsRepository = userDetailsRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
-        return repo.save(user);
+    public UserResponse registerUser(RegisterUserRequest registerUserRequest) {
+        // TODO - check is user already exists
+        if(userDetailsRepository.findByUsername(registerUserRequest.getUsername()).isPresent()) {
+            throw new RuntimeException("User Already Exist!");
+        }
+
+        // TODO - encode password in request
+        Users users = new Users();
+        users.setUsername(registerUserRequest.getUsername());
+        users.setRole(registerUserRequest.getRole());
+        users.setPassword(passwordEncoder.encode(registerUserRequest.getPassword()));
+
+        // TODO - save user
+        Users savedUser = userDetailsRepository.save(users);
+
+        return new UserResponse(savedUser.getId(), savedUser.getUsername(), savedUser.getRole().name());
     }
 }

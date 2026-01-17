@@ -1,8 +1,6 @@
 package com.example.spring_boot_jobApp.service;
 
-import com.example.spring_boot_jobApp.model.User;
-import com.example.spring_boot_jobApp.model.UserPrincipal;
-import com.example.spring_boot_jobApp.repo.UserRepo;
+import com.example.spring_boot_jobApp.repo.UserDetailsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -10,21 +8,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MyUserDetailsService implements UserDetailsService {
+public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
-    private UserRepo repo;
+    private UserDetailsRepository userDetailsRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
-        User user = repo.findByUsername(username);
-
-        if(user == null) {
-            System.out.println("User 404");
-            throw new UsernameNotFoundException("User 404");
-        }
-
-        return new UserPrincipal(user);
+        return userDetailsRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("username not found"));
     }
 }

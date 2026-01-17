@@ -1,53 +1,59 @@
-package com.example.spring_boot_jobApp;
+package com.example.spring_boot_jobApp.controller;
 
 import com.example.spring_boot_jobApp.model.JobPost;
 import com.example.spring_boot_jobApp.service.JobService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 public class JobRestController {
     @Autowired
     private JobService service;
 
-    @GetMapping("jobPosts")
+    @GetMapping("/jobPosts")
+    @PreAuthorize("hasAuthority('DEMO_READ')")
     public List<JobPost> getAllJobs() {
         return service.getAllJobs();
     }
 
-    @GetMapping("jobPost/{postId}")
+    @GetMapping("/jobPost/{postId}")
+    @PreAuthorize("hasAuthority('DEMO_READ')")
     public JobPost getJob(@PathVariable int postId){
         return service.getJob(postId);
     }
 
-    @GetMapping("jobPosts/keyword/{keyword}")
+    @GetMapping("/jobPosts/keyword/{keyword}")
+    @PreAuthorize("hasAuthority('DEMO_READ')")
     public List<JobPost> searchByKeyword(@PathVariable String keyword) {
         return service.searchByKeyword(keyword);
     }
 
-    @PostMapping("jobPost")
+    @PostMapping("/jobPost")
+    @PreAuthorize("hasAuthority('DEMO_WRITE')")
     public JobPost addJob(@RequestBody JobPost jobPost) {
         service.addJob(jobPost);
         return service.getJob(jobPost.getPostId());
     }
 
-    @PutMapping("jobPost")
+    @PutMapping("/jobPost")
+    @PreAuthorize("hasAuthority('DEMO_WRITE')")
     public JobPost updateJob(@RequestBody JobPost jobPost) {
         service.updateJob(jobPost);
         return service.getJob(jobPost.getPostId());
     }
 
-    @DeleteMapping("jobPost/{postId}")
+    @DeleteMapping("/jobPost/{postId}")
+    @PreAuthorize("hasAuthority('DEMO_DELETE')")
     public String deleteJob(@PathVariable int postId) {
         service.deleteJob(postId);
         return  "Deleted";
     }
 
     // this method is for load the initial data
-    @GetMapping("load")
+    @GetMapping("/load")
     public String loadData() {
         service.load();
         return "Success";
