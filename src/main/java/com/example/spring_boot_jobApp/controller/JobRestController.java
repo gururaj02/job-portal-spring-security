@@ -1,6 +1,7 @@
 package com.example.spring_boot_jobApp.controller;
 
 import com.example.spring_boot_jobApp.model.JobPost;
+import com.example.spring_boot_jobApp.service.CacheInspectionService;
 import com.example.spring_boot_jobApp.service.JobService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,6 +13,9 @@ import java.util.List;
 public class JobRestController {
     @Autowired
     private JobService service;
+
+    @Autowired
+    private CacheInspectionService cacheInspectionService;
 
     @GetMapping("/jobPosts")
     @PreAuthorize("hasAuthority('DEMO_READ')")
@@ -41,8 +45,8 @@ public class JobRestController {
     @PutMapping("/jobPost")
     @PreAuthorize("hasAuthority('DEMO_WRITE')")
     public JobPost updateJob(@RequestBody JobPost jobPost) {
-        service.updateJob(jobPost);
-        return service.getJob(jobPost.getPostId());
+        return service.updateJob(jobPost);
+//        return service.getJob(jobPost.getPostId());
     }
 
     @DeleteMapping("/jobPost/{postId}")
@@ -50,6 +54,11 @@ public class JobRestController {
     public String deleteJob(@PathVariable int postId) {
         service.deleteJob(postId);
         return  "Deleted";
+    }
+
+    @GetMapping("/cacheData")
+    public void getCacheData() {
+        cacheInspectionService.printCacheContents("post");
     }
 
     // this method is for load the initial data

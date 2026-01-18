@@ -3,6 +3,9 @@ package com.example.spring_boot_jobApp.service;
 import com.example.spring_boot_jobApp.model.JobPost;
 import com.example.spring_boot_jobApp.repo.JobRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,6 +21,7 @@ public class JobService {
         return repo.findAll();
     }
 
+    @Cacheable(value = "post", key = "#postId")
     public JobPost getJob(int postId) {
         return repo.findById(postId).orElse(new JobPost());
     }
@@ -30,10 +34,12 @@ public class JobService {
         repo.save(jobPost);
     }
 
-    public void updateJob(JobPost jobPost) {
-        repo.save(jobPost);
+    @CachePut(value = "post", key = "#jobPost.postId")
+    public JobPost updateJob(JobPost jobPost) {
+        return repo.save(jobPost);
     }
 
+    @CacheEvict(value = "post", key = "#postId")
     public void deleteJob(int postId) {
         repo.deleteById(postId);
     }

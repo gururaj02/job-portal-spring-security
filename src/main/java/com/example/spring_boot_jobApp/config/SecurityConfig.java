@@ -28,7 +28,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/authenticate").permitAll()
+                        auth.requestMatchers("/authenticate", "/cacheData").permitAll()
                                 .requestMatchers("/api/users/register").permitAll()
 
 //                                .requestMatchers("/health").hasRole(Role.USER.name()) // Role Based
