@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: jobportal
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Guru@2003
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: spring-boot-jobApp
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: jobportal
+      DB_USERNAME: postgres
+      DB_PASSWORD: Guru@2003
+
+volumes:
+  postgres_data:
